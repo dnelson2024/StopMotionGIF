@@ -1,0 +1,109 @@
+#use GIF Player: https://onlineimagetools.com/gif-player to use file
+import RPi.GPIO as GPIO 
+from time import sleep 
+from pygame import mixer 
+import subprocess
+from PIL import Image
+
+#button and led set up 
+button = 23
+red_led = 16 
+yellow_led = 12 
+green_led = 18
+
+GPIO.setwarnings(False) 
+GPIO.setmode(GPIO.BCM) 
+GPIO.setup(red_led,GPIO.OUT) 
+GPIO.setup(yellow_led,GPIO.OUT) 
+GPIO.setup(green_led,GPIO.OUT) 
+GPIO.setup(button,GPIO.IN)
+
+light_seqence_and_audio_copmplete = False 
+
+#audio set up
+
+mixer.pre_init(44100, 16, 2, 4096) 
+mixer.init()
+
+def start_message():
+  print("Create your own 15 frame stop motion video!") 
+  print("Press the button on the breadboard to start!")
+start_message()
+
+def start_light_sequence_and_audio():
+  GPIO.output(red_led, True)
+  print("1") mixer.music.load("/home/pi/Desktop/Audio/start_audio.mp3") mixer.music.play()
+  sleep(1)
+  GPIO.output(yellow_led,True) 
+  print("2")
+  sleep(1) 
+  GPIO.output(green_led, True) 
+  print("3")
+  sleep(1)
+  print("GO!")
+  sleep(1)
+  GPIO.output(red_led, False) 
+  GPIO.output(yellow_led,False) 
+  GPIO.output(green_led, False)
+
+def make_stop_motion_vid():
+  #takes the photos - call to command line 
+  n=0
+  for i in range(15):
+    subprocess.run(f"fswebcam -p YUYV -r 320x240 /home/pi/Desktop/Frames/frame{n}.jpg", shell=True, stdout=subprocess.PIPE)
+    sleep(0.5)
+    n = n +1 
+    mixer.music.load("/home/pi/Desktop/Audio/camera.mp3") mixer.music.play()
+  #makes the gif
+  im1 = Image.open("/home/pi/Desktop/Frames/frame0.jpg") #change to black screen if all else fails
+  im2 = Image.open("/home/pi/Desktop/Frames/frame1.jpg") 
+  im3 = Image.open("/home/pi/Desktop/Frames/frame2.jpg") 
+  im4 = Image.open("/home/pi/Desktop/Frames/frame3.jpg") 
+  im5 = Image.open("/home/pi/Desktop/Frames/frame4.jpg") 
+  im6 = Image.open("/home/pi/Desktop/Frames/frame5.jpg") 
+  im7 = Image.open("/home/pi/Desktop/Frames/frame6.jpg") 
+  im8 = Image.open("/home/pi/Desktop/Frames/frame7.jpg") 
+  im9 = Image.open("/home/pi/Desktop/Frames/frame8.jpg") 
+  im10 = Image.open("/home/pi/Desktop/Frames/frame9.jpg") 
+  im11 = Image.open("/home/pi/Desktop/Frames/frame10.jpg") 
+  im12 = Image.open("/home/pi/Desktop/Frames/frame11.jpg") 
+  im13 = Image.open("/home/pi/Desktop/Frames/frame12.jpg") 
+  im14 = Image.open("/home/pi/Desktop/Frames/frame13.jpg") 
+  im15 = Image.open("/home/pi/Desktop/Frames/frame14.jpg")
+ 
+  im1.save("/home/pi/Desktop/StopMotionVideos/stop_motion.gif", save_all = True, format = "GIF", append_images = [im2, im3, im4, im5, im6, im7, im8, im9, im10, im11, im12, im13 , im14, im15], duration = 200, loop = 0)
+
+def end_light_sequence_and_audio():
+  GPIO.output(green_led, True)
+  print("3") 
+  mixer.music.load("/home/pi/Desktop/Audio/end_audio.mp3") 
+  mixer.music.play()
+  sleep(1)
+  GPIO.output(yellow_led, True)
+  print("2")
+  sleep(1)
+  GPIO.output(red_led, True)
+  print("1")
+  sleep(1)
+  print("Video finished!")
+  print("Congrats!") 
+  mixer.music.load("/home/pi/Desktop/Audio/applause.mp3") 
+  mixer.music.play()
+  sleep(2)
+  mixer.music.stop()
+
+while True:
+  if GPIO.input(button):
+    GPIO.output(red_led, False) 
+    GPIO.output(yellow_led,False) 
+    GPIO.output(green_led, False)
+  else:
+    start_light_sequence_and_audio() 
+    light_sequence_and_audio_complete = True
+    if light_sequence_and_audio_complete == True:
+      make_stop_motion_vid() 
+      vid_made = True
+      if vid_made == True:
+        end_light_sequence_and_audio()
+
+  
