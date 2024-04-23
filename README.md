@@ -1,1 +1,3 @@
-# StopMotionGIF
+Stop Motion GIF Maker
+
+I made a Stop Motion GIF Maker  where the user makes their own GIF using a Raspberry Pi. I used a Raspberry Pi 400, bluetooth speaker, LED lights, wires, breadboard, and a camera. This is my first large Python project and I wanted to use create something interactive. When the beginning light, audio, and visual sequence plays, the user can start taking pictures. Note* the pictures are taken using the Terminal. The user takes a fifteen frame GIF that is saved to a file. To protect the users' privacy at the Expo, I made each GIF save to the same file so no one's image or likeness stayed in my computer files. At the end, the light, audio, and visual sequence plays in reverse. To improve the program, I hope to make some stylistic changes to make the program more visually pleasing with a bigger countdown. I hope you enjoy playing and this code gives you some ideas.
